@@ -46,13 +46,12 @@ int foo() {
          int innerFor;
          for(int k = 0; k < 4; k++) {
             int innerInnerFor;
-            if(2==2) {
+            for(int m = 0; m<4;m++) {
                int innerIfFor;
+               int ineneuhg;
             }
-            int somethin;
 
          }
-         int somathing2;
       }
       
 

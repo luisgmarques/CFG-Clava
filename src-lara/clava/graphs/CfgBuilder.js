@@ -129,6 +129,8 @@ class CfgBuilder {
 
 			if(previousNode.data().type !== undefined) {
 
+
+				// IF NODE
 				if(previousNode.data().type.name === "IF") {
 					let ifStmt = previousNode.data().getStmts()[0]
 					
@@ -139,13 +141,29 @@ class CfgBuilder {
 						Graphs.addEdge(this.#graph, previousNode, elseNode, new CfgEdge(CfgEdgeType.FALSE));
 				
 					} else {
-						let nextScopeId = ifStmt.siblingsRight[0].astId
-						let nextScope = this.#nodes.get(nextScopeId)
-						Graphs.addEdge(this.#graph, previousNode, nextScope, new CfgEdge(CfgEdgeType.FALSE));
+
+						if(ifStmt.siblingsRight.length > 0) {
+
+							let nextScopeId = ifStmt.siblingsRight[0].astId
+							let nextScope = this.#nodes.get(nextScopeId)
+							Graphs.addEdge(this.#graph, previousNode, nextScope, new CfgEdge(CfgEdgeType.FALSE));
+							
+						}
+
+						else if(ifStmt.parent.parent.instanceOf("loop")) {
+							let forStmtId = ifStmt.parent.parent.astId
+							let forScope = this.#nodes.get(forStmtId)
+							Graphs.addEdge(this.#graph, previousNode, forScope, new CfgEdge(CfgEdgeType.FALSE));
+							
+						}
+
+
 					}
 	
 					Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.TRUE));
 				
+
+				// FOR NODE
 				} else if(previousNode.data().type.name === "FOR") {
 					
 					Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.TRUE));
@@ -156,6 +174,9 @@ class CfgBuilder {
 					println(forStmt)
 					println(forStmt.parent.parent.astName) 
 					
+
+					// FOR STATEMENT IS NOT THE LAST STATEMENT OF THE SCOPE
+
 					if(forStmt.siblingsRight[0] !== undefined) {
 						
 						let siblingId = forStmt.siblingsRight[0].astId
@@ -176,23 +197,34 @@ class CfgBuilder {
 							Graphs.addEdge(this.#graph, previousNode, this.#nodes.get(forStmt.parent.parent.astId), new CfgEdge(CfgEdgeType.FALSE));
 						}
 						else {
-
+							// HARDCODED
 							Graphs.addEdge(this.#graph, nodes[nodes.length-2], previousNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
 							Graphs.addEdge(this.#graph, previousNode, nodes[nodes.length-1], new CfgEdge(CfgEdgeType.FALSE));
 						}
 						
 					}
 
+
+				// SCOPES
 				} else {
-				
+					
 					Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.UNCONDITIONAL));
 				}
 
 			
 			
 			} else {
-				
+				let siblings = previousNode.data().stmts[previousNode.data().stmts.length-1].siblingsRight[0]
+				if(previousNode.data().stmts[0].parent.parent.instanceOf("loop") && siblings === undefined) 
+					continue
 				Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+
+				if(siblings === undefined) {
+					if (previousNode.data().smts[0].parent.parent.instanceOf("if")) {
+						if (previousNode.data().smts[0].parent.parent.parent.instanceOf("loop"))
+							continue;
+					}
+				}
 				
 			}
 
