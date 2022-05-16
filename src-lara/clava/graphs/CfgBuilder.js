@@ -138,6 +138,10 @@ class CfgBuilder {
 						let elseNode = this.#nodes.get(elseId)
 						Graphs.addEdge(this.#graph, previousNode, elseNode, new CfgEdge(CfgEdgeType.FALSE));
 				
+					} else {
+						let nextScopeId = ifStmt.siblingsRight[0].astId
+						let nextScope = this.#nodes.get(nextScopeId)
+						Graphs.addEdge(this.#graph, previousNode, nextScope, new CfgEdge(CfgEdgeType.FALSE));
 					}
 	
 					Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.TRUE));
