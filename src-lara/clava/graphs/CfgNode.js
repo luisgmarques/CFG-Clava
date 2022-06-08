@@ -1,11 +1,11 @@
 laraImport("clava.graphs.CfgNodeType");
-laraImport("lara.graphs.GraphNode");
+laraImport("lara.graphs.NodeData");
 laraImport("clava.ClavaJoinPoints");
 
 /**
  * The data of a CFG node.
  */
-class CfgNode extends GraphNode {
+class CfgNode extends NodeData {
 	
 	stmts;
 	type;

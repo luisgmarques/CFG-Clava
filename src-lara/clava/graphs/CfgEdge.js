@@ -1,9 +1,9 @@
-laraImport("lara.graphs.GraphEdge")
+laraImport("lara.graphs.EdgeData")
 
 /**
  * An edge of the CFG
  */
-class CfgEdge extends GraphEdge{
+class CfgEdge extends EdgeData {
 	
 	#type
 	
