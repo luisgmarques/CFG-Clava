@@ -48,7 +48,14 @@ class CfgUtils {
 				return CfgNodeType.IF_END
 			
 		}
-*/		
+		*/		
+/*
+		if($stmt.instanceOf("body")) {
+			const parent = $stmt.parent
+			if(parent.instanceOf("function"))
+				return CfgNodeType.SCOPE_DATA
+		}
+		*/
 		// Scope stmt
 		if($stmt.instanceOf("scope")) {
 			const parent = $stmt.parent;
@@ -69,7 +76,8 @@ class CfgUtils {
 		if(left.length > 0 ) {
 			const lastLeft = left[left.length-1];
 
-			if(CfgUtils.getNodeType(lastLeft) !== undefined) {
+			const leftNodeType = CfgUtils.getNodeType(lastLeft);
+			if(leftNodeType !== undefined && leftNodeType !== CfgNodeType.INST_LIST) {
 				return CfgNodeType.INST_LIST;
 			}
 		}

@@ -16,6 +16,7 @@ int foo() {
       
 	}
 	int abc;
+   abc = 0;
 	if(0 != 0) {
 		{
          

@@ -11,6 +11,7 @@ class CfgNodeType {
 	static FOR = new CfgNodeType("FOR")
 	static SCOPE = new CfgNodeType("SCOPE")
 	static INST_LIST = new CfgNodeType("INST_LIST")	
+	static SCOPE_DATA = new CfgNodeType("SCOPE_DATA")	
 	static BODY = new CfgNodeType("BODY")
 	static SCOPE_START = new CfgNodeType("SCOPE_START")
 	static SCOPE_END = new CfgNodeType("SCOPE_END")

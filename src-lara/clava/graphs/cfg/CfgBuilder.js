@@ -7,6 +7,7 @@ laraImport("clava.graphs.cfg.CfgEdge")
 laraImport("clava.graphs.cfg.CfgEdgeType");
 laraImport("clava.graphs.cfg.Cfg");
 laraImport("clava.graphs.cfg.CfgUtils");
+laraImport("clava.graphs.cfg.nodedata.DataFactory")
 laraImport("clava.ClavaJoinPoints")
 
 class CfgBuilder {
@@ -46,7 +47,7 @@ class CfgBuilder {
 		this.#nodes = new Map;
 		
 		// Create start
-		this.#startNode = Graphs.addNode(this.#graph, new CfgNode(CfgNodeType.START));
+		this.#startNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.START));
 		this.#nodes.set('START', this.#startNode)
 		
 		
@@ -60,7 +61,7 @@ class CfgBuilder {
 		this._addAuxComments()
 		this._createNodes();
 		// Create End Node
-		this.#endNode = Graphs.addNode(this.#graph, new CfgNode(CfgNodeType.END));
+		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END));
 		this.#nodes.set('END', this.#endNode)
 
 		//this._fillNodes();	
@@ -72,6 +73,11 @@ class CfgBuilder {
 	_addAuxComments() {
 		
 		for(const $currentJp of this.#jp.descendants) {
+			if($currentJp.instanceOf("scope")) {
+				$currentJp.insertBegin(ClavaJoinPoints.comment("SCOPE_START"))
+				$currentJp.insertEnd(ClavaJoinPoints.comment("SCOPE_END"))
+			}
+/*
 			if($currentJp.instanceOf("body")) {
 				if($currentJp.parent.instanceOf("loop") && $currentJp.parent.kind == "for") {
 					
@@ -91,7 +97,7 @@ class CfgBuilder {
 					$currentJp.insertEnd(ClavaJoinPoints.comment("SCOPE_END"))				
 				}
 			}	
-			
+			*/
 		}
 	}
 	
@@ -201,20 +207,60 @@ class CfgBuilder {
 					Graphs.addEdge(this.#graph, node, elseNode, new CfgEdge(CfgEdgeType.FALSE));
 				}
 				else {
+					// There should always be a sibling, because of inserted comments
 					const after = ifStmt.siblingsRight[0];
-					println(after)
+					//println(after)
 					const afterNode = this.#nodes.get(after.astId);							
 					Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.FALSE));	
 				}
 			}
 
 
-			else if(nodeType === CfgNodeType.FOR_START) {
-				
-			}
+			// INST_LIST NODE
+			if(nodeType === CfgNodeType.INST_LIST) {
+				const stmts = node.data().getStmts();
+				const $lastStmt = stmts[stmts.length-1];
+				const rightNodes = $lastStmt.siblingsRight;
 
-			else {
+				if(rightNodes.length > 0) {
+					const afterNode = this.#nodes.get(rightNodes[0].astId);
+					Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));						
+				} else {
+					const $scope = $lastStmt.parent;
+					isJoinPoint($scope, "scope");
 
+					const $scopeParent = $scope.parent;
+					if($scopeParent.instanceOf("if")) {
+						// Connect to right sibling of if
+						const rightIf = $scopeParent.siblingsRight;						
+						if(rightIf.length === 0) {
+							println("IF: " + $scopeParent.location);
+						}
+						const afterNode = this.#nodes.get(rightIf[0].astId);
+						Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));												
+					} else if($scopeParent.instanceOf("loop") && $scopeParent.kind === "for") {
+						// Connect to for 
+						const forNode = this.#nodes.get($scopeParent.astId);
+						Graphs.addEdge(this.#graph, node, forNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));													
+					} else if($scopeParent.instanceOf("scope")) {
+						// Connect to next statement of scope 
+						const rightScope = $scope.siblingsRight;						
+						
+						// Case where scope is body of function?
+						//if(rightScope.length === 0) {
+						//	isJoinPoint($scopeParent.parent, "function");
+						//	Graphs.addEdge(this.#graph, node, this.#endNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+						//} else {
+							const afterNode = this.#nodes.get(rightScope[0].astId);
+							Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));					
+						//}
+					} else if($scopeParent.instanceOf("function")) {
+						Graphs.addEdge(this.#graph, node, this.#endNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+					} else {
+						println("Could not connect INST_LIST of instruction " + stmts[0].parent.location);
+					}
+
+				}
 			}
 				
 
@@ -448,7 +494,7 @@ class CfgBuilder {
 
 	_createCfgNode($stmt, nodeType) {
 		let declStmt = this._getDeclStmt($stmt)
-		let cfgNode = new CfgNode(nodeType, declStmt)
+		let cfgNode = DataFactory.newData(nodeType, declStmt)
 
 		
 		if(declStmt !== undefined) {
@@ -489,7 +535,7 @@ class CfgBuilder {
 		
 			const nodeType = CfgUtils.getNodeType($stmt);
 			//if(nodeType.name !== 'SCOPE') {
-				node = Graphs.addNode(this.#graph, new CfgNode(nodeType, $stmt));
+				node = Graphs.addNode(this.#graph, DataFactory.newData(nodeType, $stmt));
 	
 				this.#nodes.set($stmt.astId, node);
 			//}
