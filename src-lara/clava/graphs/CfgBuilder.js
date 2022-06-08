@@ -7,6 +7,7 @@ laraImport("clava.graphs.CfgEdge")
 laraImport("clava.graphs.CfgEdgeType");
 laraImport("clava.graphs.Cfg");
 laraImport("clava.graphs.CfgUtils");
+laraImport("clava.ClavaJoinPoints")
 
 class CfgBuilder {
 	
@@ -56,6 +57,7 @@ class CfgBuilder {
 	}
 	
 	build() {
+		this._addAuxComments()
 		this._createNodes();
 		// Create End Node
 		this.#endNode = Graphs.addNode(this.#graph, new CfgNode(CfgNodeType.END));
@@ -66,6 +68,32 @@ class CfgBuilder {
 		return this.#graph;
 	}
 	
+
+	_addAuxComments() {
+		
+		for(const $currentJp of this.#jp.descendants) {
+			if($currentJp.instanceOf("body")) {
+				if($currentJp.parent.instanceOf("loop") && $currentJp.parent.kind == "for") {
+					
+					$currentJp.insertBegin(ClavaJoinPoints.comment("FOR_START"))
+					$currentJp.insertEnd(ClavaJoinPoints.comment("FOR_END"))
+					continue
+					
+				} else if($currentJp.parent.instanceOf("if")) {
+					
+					$currentJp.insertBegin(ClavaJoinPoints.comment("IF_START"))
+					$currentJp.insertEnd(ClavaJoinPoints.comment("IF_END"))
+					continue
+					
+				}
+				if($currentJp.instanceOf("scope")) {
+					$currentJp.insertBegin(ClavaJoinPoints.comment("SCOPE_START"))
+					$currentJp.insertEnd(ClavaJoinPoints.comment("SCOPE_END"))				
+				}
+			}	
+			
+		}
+	}
 	
 	/**
 	 * Creates all nodes (except start and end), with only the leader statement
@@ -76,12 +104,13 @@ class CfgBuilder {
 		// Test all statements for leadership
 		// If they are leaders, create node
 		for(const $stmt of Query.searchFromInclusive(this.#jp, "statement")) {
-			//println("Is leader?: " + CfgUtils.isLeader($stmt) + ' -> ' +$stmt.line);			
-			if(CfgUtils.isLeader($stmt)) {	
+			//println("Is leader?: " + CfgUtils.isLeader($stmt) + ' -> ' +$stmt.line);		
+			
+			if(CfgUtils.isLeader($stmt)) {
 				this._getOrAddNode($stmt, true);
-			}
-			else 
-			{
+			} 
+			/*
+			else {
 				// First statement after Start Node is Leader
 				if($stmt.siblingsLeft.length == 0 && CfgUtils.isLeader($stmt.parent)) {
 					if($stmt.parent.kind === 'for') 
@@ -90,9 +119,12 @@ class CfgBuilder {
 				}
 				// Statement after Leader statements is Leader
 				else if (CfgUtils.isLeader($stmt.siblingsLeft[$stmt.siblingsLeft.length-1])) {
+					
 					this._createLeaderStmt($stmt)
 				}
+				
 			}
+			*/
 		}
 		
 	}
@@ -107,14 +139,117 @@ class CfgBuilder {
 		// If the first statement of the scope is a leader statement, the graph node should have
 		// 0 statements
 
-		for(let stmt in this.#nodes) {
-			let node = this.#nodes[stmt]
-			
+	}
+
+	_connectNodes2() {
+
+		let nodes = []
+
+		for(const value of this.#nodes.values()) 
+			nodes.push(value)
+
+		for(let i = 1; i < nodes.length; i++) {
+			let previousNode = nodes[i-1]
+			let currentNode = nodes[i]
+
+			println(currentNode)
+
+
+
+
+
+
+
+
+
 		}
 
+
+
+
 	}
-	
+
+
+
+
 	_connectNodes() {
+
+		for(const node of this.#nodes.values()) {
+
+			const nodeType = node.data().type;
+
+			if(nodeType === undefined) {
+				//printlnObject( node.data());
+				//throw new Error("Node type is undefined: ");
+				continue;
+			}			
+
+			// IF NODE
+			if(nodeType === CfgNodeType.IF) {
+				const ifStmt = node.data().getStmts()[0];
+
+				const thenStmt = ifStmt.then;
+				const thenNode = this.#nodes.get(thenStmt.astId);
+
+				Graphs.addEdge(this.#graph, node, thenNode, new CfgEdge(CfgEdgeType.TRUE));
+
+				
+				const elseStmt = ifStmt.else
+				
+				if(elseStmt !== undefined) {
+					const elseNode = this.#nodes.get(elseStmt.astId)
+					Graphs.addEdge(this.#graph, node, elseNode, new CfgEdge(CfgEdgeType.FALSE));
+				}
+				else {
+					const after = ifStmt.siblingsRight[0];
+					println(after)
+					const afterNode = this.#nodes.get(after.astId);							
+					Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.FALSE));	
+				}
+			}
+
+
+			else if(nodeType === CfgNodeType.FOR_START) {
+				
+			}
+
+			else {
+
+			}
+				
+
+
+
+
+				//Graphs.addEdge(this.#graph, node, thenNode, new CfgEdge(CfgEdgeType.));
+/*
+				if(ifStmt.else !== undefined) {
+	
+					let elseId = ifStmt.else.astId
+					let elseNode = this.#nodes.get(elseId)
+					Graphs.addEdge(this.#graph, previousNode, elseNode, new CfgEdge(CfgEdgeType.FALSE));
+			
+				} else {
+
+					if(ifStmt.siblingsRight.length > 0) {
+
+						let nextScopeId = ifStmt.siblingsRight[0].astId
+						let nextScope = this.#nodes.get(nextScopeId)
+						Graphs.addEdge(this.#graph, previousNode, nextScope, new CfgEdge(CfgEdgeType.FALSE));
+						
+					}
+
+				}
+
+				Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.TRUE));
+*/
+			}
+
+		}
+
+	
+	
+	_connectNodes_old() {
 		// TODO
 		//Graphs.addEdge(this.#graph, this.#startNode, node, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
 		
@@ -150,14 +285,6 @@ class CfgBuilder {
 							
 						}
 
-						else if(ifStmt.parent.parent.instanceOf("loop")) {
-							let forStmtId = ifStmt.parent.parent.astId
-							let forScope = this.#nodes.get(forStmtId)
-							Graphs.addEdge(this.#graph, previousNode, forScope, new CfgEdge(CfgEdgeType.FALSE));
-							
-						}
-
-
 					}
 	
 					Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.TRUE));
@@ -170,72 +297,57 @@ class CfgBuilder {
 					
 					
 					let forStmt = previousNode.data().getStmts()[0] // For Statement
-					print('for stmt: ')
-					println(forStmt)
-					println(forStmt.parent.parent.astName) 
-					
-
 					// FOR STATEMENT IS NOT THE LAST STATEMENT OF THE SCOPE
 
 					if(forStmt.siblingsRight[0] !== undefined) {
+
+						if(forStmt.parent.parent.instanceOf("loop") && forStmt.parent.parent.kind === "for") {
+
+							
+
+						} else {
+
+							let siblingId = forStmt.siblingsRight[0].astId
+							let siblingNode = this.#nodes.get(siblingId) // o
+
+							Graphs.addEdge(this.#graph, previousNode, siblingNode, new CfgEdge(CfgEdgeType.FALSE));
+						}
 						
-						let siblingId = forStmt.siblingsRight[0].astId
-						let siblingNode = this.#nodes.get(siblingId)
 	
-						for(let k = i; k < nodes.length; k++) {
+						// Edge from the last statement to 
+						/* for(let k = i; k < nodes.length; k++) {
 							if(nodes[k] === siblingNode) {
 								Graphs.addEdge(this.#graph, nodes[k-1], this.#nodes.get(nodes[k-1].data().getStmts()[0].parent.parent.astId), new CfgEdge(CfgEdgeType.UNCONDITIONAL));
 								
 							}
-						}
+						} */
 						
-						Graphs.addEdge(this.#graph, previousNode, siblingNode, new CfgEdge(CfgEdgeType.FALSE));
 	
-					} else {
-						if(forStmt.parent.parent.astName === 'ForStmt') {
-
-							Graphs.addEdge(this.#graph, previousNode, this.#nodes.get(forStmt.parent.parent.astId), new CfgEdge(CfgEdgeType.FALSE));
-						}
-						else {
-							// HARDCODED
-							Graphs.addEdge(this.#graph, nodes[nodes.length-2], previousNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
-							Graphs.addEdge(this.#graph, previousNode, nodes[nodes.length-1], new CfgEdge(CfgEdgeType.FALSE));
-						}
-						
+					} else {	
+							
+						Graphs.addEdge(this.#graph, previousNode, nodes[nodes.length-1], new CfgEdge(CfgEdgeType.FALSE));						
 					}
 
 
 				// SCOPES
 				} else {
-					
-					Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+					if(nodes[i].data().toString().trim() === "END_FOR") {
+						let forScopeId = nodes[i].data().stmts[0].parent.parent.astId
+						let forScope = this.#nodes.get(forScopeId)
+						println(nodes[i].data().stmts[0].parent.parent)
+						Graphs.addEdge(this.#graph, nodes[i], forScope, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+					}
+					if(previousNode.data().toString().trim() !== "END_FOR")
+						Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.UNCONDITIONAL));
 				}
-
-			
 			
 			} else {
-				let siblings = previousNode.data().stmts[previousNode.data().stmts.length-1].siblingsRight[0]
-				if(previousNode.data().stmts[0].parent.parent.instanceOf("loop") && siblings === undefined) 
-					continue
+				if(previousNode.data().toString().trim() !== "END_FOR") 
 				Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.UNCONDITIONAL));
-
-				if(siblings === undefined) {
-					if (previousNode.data().smts[0].parent.parent.instanceOf("if")) {
-						if (previousNode.data().smts[0].parent.parent.parent.instanceOf("loop"))
-							continue;
-					}
-				}
-				
 			}
 
 		}
-
-
-
-
-
-
-
+	}		
 
 		/**
 
@@ -283,41 +395,51 @@ class CfgBuilder {
 
 		*/
 
-	}		
 
 
-	_connectForNodes(finalNodeId, iterator, nodes) {
-		for(let i = iterator; i < nodes.length; i++) {
-			if(nodes[i] === this.#nodes.get(finalNodeId))
-				return
-
-			previousNode = nodes[i-1]
-
-			Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.UNCONDITIONAL))
-		}
-	}
-
-	_connectIfNodes(nodes, iterator, ) {
-
-	}
-	
-	_getKey(map, input) {
-		for (const [key, value] of map.entries()) {
-			if (value === input) {
-				return key;
+	_ifLoops(ifScope, parent) {
+		for(let descendant of ifScope.data().stmts[0].descendants) {
+			if(descendant.instanceOf("if"))
+				this._ifLoops(descendant, ifScope)
+			else if(descendant.instanceOf("loop")) {
+				this._forLoops(descendant, ifScope)
 			}
 		}
-		
-		return undefined;
+		if(parent !== undefined) {
+			Graphs.addEdge(this.#graph, ifScope, parent, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+		}
+		else {
+
+		}
+
+
 	}
-	
+
+	_forLoops(forScope, parent) {
+		println(forScope)
+		if(forScope !== undefined) {
+
+			for(let descendant of forScope.data().stmts[0].descendants) {
+				
+				if(descendant.instanceOf("loop")) {
+					this._forLoops(descendant, forScope)
+				}
+				else if(descendant.instanceOf("if")) {
+					this._ifLoops(descendant, forScope)
+				}
+			}
+		}
+		if(parent !== undefined)
+			Graphs.addEdge(this.#graph, forScope, parent, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
+
+	}
 
 	
 	_getDeclStmt($stmt) {
 		if($stmt.firstChild.instanceOf("declStmt")) {
 			return $stmt.firstChild
 		}
-		else if($stmt.instanceOf('declStmt') || $stmt.instanceOf('returnStmt')) {
+		else if($stmt.instanceOf('declStmt') || $stmt.instanceOf('returnStmt') || $stmt.instanceOf('wrapperStmt')) {
 			return $stmt
 		}
 
@@ -327,9 +449,14 @@ class CfgBuilder {
 	_createCfgNode($stmt, nodeType) {
 		let declStmt = this._getDeclStmt($stmt)
 		let cfgNode = new CfgNode(nodeType, declStmt)
+
 		
 		if(declStmt !== undefined) {
+			if(declStmt.instanceOf("wrapperStmt")) {
+				return cfgNode
+			}
 
+			// Add statements until leader node is found
 			for(let sibling of declStmt.siblingsRight) {
 				if(CfgUtils.isLeader(sibling)) {
 					break;
@@ -349,25 +476,23 @@ class CfgBuilder {
 	}
 
 	
-	
 	/**
 	 * Returns the node corresponding to this statement, or creates a new one if one does not exist yet.
 	 */
 	_getOrAddNode($stmt, create) {
 		const _create = create ?? false;
-		println($stmt.dump)
+		//println($stmt.dump)
 		let node = this.#nodes[$stmt.astId];
 		// If there is not yet a node for this statement, create
 		if(node === undefined && _create) {
 
 		
 			const nodeType = CfgUtils.getNodeType($stmt);
-			if(nodeType.name !== 'SCOPE') {
-
+			//if(nodeType.name !== 'SCOPE') {
 				node = Graphs.addNode(this.#graph, new CfgNode(nodeType, $stmt));
 	
 				this.#nodes.set($stmt.astId, node);
-			}
+			//}
 			
 		
 			// Example of how to add an edge:

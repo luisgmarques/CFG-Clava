@@ -60,7 +60,10 @@ class CfgNode extends GraphNode {
 			//println("Node type: " + nodeType)
 			//println("Node name: " + nodeType.name)
 			
+			//const showStatements = nodeType === CfgNodeType.SCOPE || nodeType === CfgNodeType.THEN || nodeType === CfgNodeType.ELSE || nodeType === undefined;
+
 			let stmtCode = nodeType !== undefined ? nodeType.name : $stmt.code;
+			//let stmtCode = showStatements ? $stmt.code : nodeType.name;
 			
 			//println("Code: " + stmtCode);
 			

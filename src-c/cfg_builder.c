@@ -10,8 +10,10 @@ int foo() {
 	}
 	
 	if(0 == 0) {
+      
 		int ifWithoutElse;
 		int ifWithoutElseStmt2;		
+      
 	}
 	int abc;
 	if(0 != 0) {
@@ -27,6 +29,10 @@ int foo() {
          }
          else {
             int elseif;
+            if(2==2) {
+               int ifihefi;
+            }
+            int ijfij;
          }
 
 		}
@@ -46,15 +52,28 @@ int foo() {
          int innerFor;
          for(int k = 0; k < 4; k++) {
             int innerInnerFor;
+            {
+               int jijrg;
+            }
+            {
+               int qqq;
+            }
             for(int m = 0; m<4;m++) {
                int innerIfFor;
                int ineneuhg;
+              if(3==3) {
+                 
+                 int jgji;
+                 int jijgij;
+                
+              }
+              int ijfiji;
+              
             }
 
          }
       }
-      
-
+     
 	}
 
    int betweenFor;
@@ -62,6 +81,10 @@ int foo() {
    for(int k = 0; k < 4; k++) {
       int forLoop;
       int forLoop2;
+      for(int j = 0; j < 4; j++) {
+         int hkngkg;
+         int argrghr;
+      }
    }
 	
 }

@@ -1,4 +1,5 @@
 int foo() {
+   //SCOPE_START
    int i;
    int k;
    int h;
@@ -9,11 +10,14 @@ int foo() {
       int scopeStmt2;
    }
    if(0 == 0) {
+      //IF_START
       int ifWithoutElse;
       int ifWithoutElseStmt2;
+      //IF_END
    }
    int abc;
    if(0 != 0) {
+      //IF_START
       {
          {
             int ifWithElseThen;
@@ -21,38 +25,81 @@ int foo() {
          }
          int j;
          if(1 == 1) {
+            //IF_START
             int if1equals1;
+            //IF_END
          }
          else {
+            //IF_START
             int elseif;
+            if(2 == 2) {
+               //IF_START
+               int ifihefi;
+               //IF_END
+            }
+            int ijfij;
+            //IF_END
          }
       }
       int s;
+      //IF_END
    }
    else {
+      //IF_START
       int ifWithElseElse;
       int ifWithElseElseStmt2;
+      //IF_END
    }
    int afterIfElse;
    for(int i = 0; i < 10; i++) {
+      //FOR_START
       int loopBody;
       int loopBodyStmt2;
       for(int l = 0; l < 5; l++) {
+         //FOR_START
          int innerFor;
          for(int k = 0; k < 4; k++) {
+            //FOR_START
             int innerInnerFor;
+            {
+               int jijrg;
+            }
+            {
+               int qqq;
+            }
             for(int m = 0; m < 4; m++) {
+               //FOR_START
                int innerIfFor;
                int ineneuhg;
+               if(3 == 3) {
+                  //IF_START
+                  int jgji;
+                  int jijgij;
+                  //IF_END
+               }
+               int ijfiji;
+               //FOR_END
             }
+            //FOR_END
          }
+         //FOR_END
       }
+      //FOR_END
    }
    int betweenFor;
    for(int k = 0; k < 4; k++) {
+      //FOR_START
       int forLoop;
       int forLoop2;
+      for(int j = 0; j < 4; j++) {
+         //FOR_START
+         int hkngkg;
+         int argrghr;
+         //FOR_END
+      }
+      //FOR_END
    }
+   //SCOPE_END
 }
 
 /*
