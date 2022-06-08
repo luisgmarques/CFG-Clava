@@ -1,4 +1,4 @@
-laraImport("clava.graphs.CfgBuilder");
+laraImport("clava.graphs.cfg.CfgBuilder");
 laraImport("weaver.Query");
 
     for(var $function of Query.search("function")) {
