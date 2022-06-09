@@ -92,6 +92,13 @@ class CfgUtils {
 
 			return CfgNodeType.SCOPE;
 		}
+		
+		// If is the first statement of a scope and is not any of the other type of statements, 
+		// consider the beginning of an INST_LIST
+		const $stmtParent = $stmt.parent;
+		if($stmtParent.instanceOf("scope") && $stmt.equals($stmtParent.firstStmt)) {
+			return CfgNodeType.INST_LIST;
+		}
 
 		const left = $stmt.siblingsLeft;
 		//println("NODE TYPE "+left)
@@ -140,9 +147,6 @@ class CfgUtils {
 		} else {
 			throw new Error("Case not defined for nodes of type " + $parent.joinPointType);
 		}
-
-
-	
 	}
 	
 	/**

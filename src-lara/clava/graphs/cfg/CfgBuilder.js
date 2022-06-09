@@ -46,11 +46,13 @@ class CfgBuilder {
 		this.#graph = cytoscape({ /* options */ });
 		this.#nodes = new Map;
 		
-		// Create start
+		// Create start node
 		this.#startNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.START));
 		this.#nodes.set('START', this.#startNode)
 		
-		
+		// Create end node
+		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END));
+		this.#nodes.set('END', this.#endNode)		
 	}
 	
 	static buildGraph($jp) {
@@ -60,9 +62,6 @@ class CfgBuilder {
 	build() {
 		this._addAuxComments()
 		this._createNodes();
-		// Create End Node
-		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END));
-		this.#nodes.set('END', this.#endNode)
 
 		//this._fillNodes();	
 		this._connectNodes();		
@@ -114,6 +113,8 @@ class CfgBuilder {
 			
 			if(CfgUtils.isLeader($stmt)) {
 				this._getOrAddNode($stmt, true);
+				
+				// TODO: If INST_LIST, associate all other statements of the INST_LIST to the node?
 			} 
 			/*
 			else {
@@ -179,6 +180,20 @@ class CfgBuilder {
 
 
 	_connectNodes() {
+		
+		// Connect start
+		let startAstNode = this.#jp;
+		if(startAstNode.instanceOf("function")) {
+			startAstNode = startAstNode.body;
+		}
+		
+		if(!startAstNode.instanceOf("statement")) {
+			throw new Error("Not defined how to connect the Start node to an AST node of type " + this.#jp.joinPointType);
+		} 
+		
+		let afterNode = this.#nodes.get(startAstNode.astId);				
+		Graphs.addEdge(this.#graph, this.#startNode, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));		
+		
 
 		for(const node of this.#nodes.values()) {
 
@@ -190,7 +205,7 @@ class CfgBuilder {
 				continue;
 			}			
 
-			// IF NODE
+			// IF NODE - TODO, adapt to specific node data
 			if(nodeType === CfgNodeType.IF) {
 				const ifStmt = node.data().getStmts()[0];
 
@@ -230,81 +245,21 @@ class CfgBuilder {
 					
 				
 				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));						
-				
-				/*
-				const rightNodes = $lastStmt.siblingsRight;
-
-				if(rightNodes.length > 0) {
-					const afterNode = this.#nodes.get(rightNodes[0].astId);
-					Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));						
-				} else {
-					const $scope = $lastStmt.parent;
-					isJoinPoint($scope, "scope");
-
-					const $scopeParent = $scope.parent;
-					if($scopeParent.instanceOf("if")) {
-						// Connect to right sibling of if
-						const rightIf = $scopeParent.siblingsRight;						
-						if(rightIf.length === 0) {
-							println("IF: " + $scopeParent.location);
-						}
-						const afterNode = this.#nodes.get(rightIf[0].astId);
-						Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));												
-					//} else if($scopeParent.instanceOf("loop") && $scopeParent.kind === "for") {
-					//	// Connect to for 
-					//	const forNode = this.#nodes.get($scopeParent.astId);
-					//	Graphs.addEdge(this.#graph, node, forNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));													
-					} else if($scopeParent.instanceOf("scope")) {
-						// Connect to next statement of scope 
-						const rightScope = $scope.siblingsRight;						
-						
-						// Case where scope is body of function?
-						//if(rightScope.length === 0) {
-						//	isJoinPoint($scopeParent.parent, "function");
-						//	Graphs.addEdge(this.#graph, node, this.#endNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
-						//} else {
-							const afterNode = this.#nodes.get(rightScope[0].astId);
-							Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));					
-						//}
-					} else if($scopeParent.instanceOf("function")) {
-						Graphs.addEdge(this.#graph, node, this.#endNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
-					} else {
-						println("Could not connect INST_LIST of instruction " + stmts[0].parent.location);
-					}
-
-				}
-				*/
 			}
-				
-
-
-
-
-				//Graphs.addEdge(this.#graph, node, thenNode, new CfgEdge(CfgEdgeType.));
-/*
-				if(ifStmt.else !== undefined) {
-	
-					let elseId = ifStmt.else.astId
-					let elseNode = this.#nodes.get(elseId)
-					Graphs.addEdge(this.#graph, previousNode, elseNode, new CfgEdge(CfgEdgeType.FALSE));
 			
-				} else {
+			// SCOPE_NODEs
+			if(nodeType === CfgNodeType.SCOPE || nodeType === CfgNodeType.THEN || nodeType === CfgNodeType.ELSE) {
+				const stmts = node.data().getStmts();
+				const $scope = node.data().getScope();
 
-					if(ifStmt.siblingsRight.length > 0) {
-
-						let nextScopeId = ifStmt.siblingsRight[0].astId
-						let nextScope = this.#nodes.get(nextScopeId)
-						Graphs.addEdge(this.#graph, previousNode, nextScope, new CfgEdge(CfgEdgeType.FALSE));
-						
-					}
-
-				}
-
-				Graphs.addEdge(this.#graph, previousNode, nodes[i], new CfgEdge(CfgEdgeType.TRUE));
-*/
+				// Scope connects to its own first statement that will be an INST_LIST
+				let afterNode = this.#nodes.get($scope.firstStmt.astId);
+				
+				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));						
 			}
 
 		}
+	}
 
 	
 	
