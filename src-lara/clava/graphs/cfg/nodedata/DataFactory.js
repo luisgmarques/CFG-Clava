@@ -2,6 +2,8 @@ laraImport("clava.graphs.cfg.CfgNodeType");
 laraImport("clava.graphs.cfg.CfgNode");
 laraImport("clava.graphs.cfg.nodedata.InstListNodeData");
 laraImport("clava.graphs.cfg.nodedata.ScopeNodeData");
+laraImport("clava.graphs.cfg.nodedata.LoopHeaderData");
+laraImport("clava.graphs.cfg.nodedata.HeaderData");
 
 class DataFactory {
 
@@ -11,6 +13,24 @@ class DataFactory {
 		}
 		else if (cfgNodeType === CfgNodeType.SCOPE) {
 			return new ScopeNodeData($stmt)
+		}
+		else if (cfgNodeType === CfgNodeType.LOOP_HEADER) {
+			return new LoopHeaderData($stmt)
+		}
+		else if (cfgNodeType === CfgNodeType.COND) {
+			return new HeaderData($stmt, cfgNodeType)
+		}
+		else if (cfgNodeType === CfgNodeType.STEP) {
+			return new HeaderData($stmt, cfgNodeType)
+		}
+		else if (cfgNodeType === CfgNodeType.INIT) {
+			return new HeaderData($stmt, cfgNodeType)
+		}
+		else if (cfgNodeType === CfgNodeType.THEN) {
+			return new ScopeNodeData($stmt, cfgNodeType)
+		}
+		else if (cfgNodeType === CfgNodeType.ELSE) {
+			return new ScopeNodeData($stmt, cfgNodeType)
 		}
 			
 		return new CfgNode(cfgNodeType, $stmt);		
