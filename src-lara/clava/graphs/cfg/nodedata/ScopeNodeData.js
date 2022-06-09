@@ -2,8 +2,8 @@ class ScopeNodeData extends CfgNode {
 
     #scope;
 
-    constructor($scope) {
-        super(CfgNodeType.SCOPE)
+    constructor($scope, nodeType=CfgNodeType.SCOPE) {
+        super(nodeType)
 
         isJoinPoint($scope, "scope");   
 
