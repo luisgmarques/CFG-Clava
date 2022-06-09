@@ -21,10 +21,33 @@ class CfgUtils {
 			return CfgNodeType.IF;			
 		}
 		
-		// For stmt
-		if($stmt.instanceOf("loop") && $stmt.kind === "for") {
-			return CfgNodeType.FOR;
+		// Loop stmt
+		if($stmt.instanceOf("loop")) {
+			return CfgNodeType.LOOP_HEADER;			
+		}		
+		
+		
+		// Stmt is part of loop header
+		if($stmt.isInsideLoopHeader) {
+			const $loop = $stmt.parent;
+			isJoinPoint($loop, "loop");
+			
+			if($stmt.equals($loop.init)) {
+				return CfgNodeType.INIT;			
+			} else if($stmt.equals($loop.cond)) {
+				return CfgNodeType.COND;			
+			} else if($stmt.equals($loop.step)) {
+				return CfgNodeType.STEP;			
+			} else {
+				throw new Error("Statement is in the header of loop at " + $loop.location + " but could not identify what part of the header: " + $stmt.code);
+			}
+			
 		}
+		
+		// For stmt
+		//if($stmt.instanceOf("loop") && $stmt.kind === "for") {
+		//	return CfgNodeType.FOR;
+		//}
 
 		// Body stmt
 		/*
@@ -86,6 +109,71 @@ class CfgUtils {
 		return undefined;
 		//return CfgNodeType.UNDEFINED;
 		//throw new Error(`_getNodeType() not defined for statements of type '${$stmt.joinPointType}'`);	
+	}
+	
+	/**
+	 * @return the the next stmt that executes unconditionally after the given stmt, of undefined if no statement is executed
+	 */
+	static nextExecutedStmt($stmt) {
+		
+		// If stmt is a scope, there are several special cases
+		if($stmt.instanceOf("scope")) {
+			return CfgUtils.#nextExecutedStmtAfterScope($stmt);
+		}
+		
+		const rightStmts = $stmt.siblingsRight;
+		
+		// If there are statements to the right, the rightmost is the next to be executed
+		if(rightStmts.length > 0) {
+			return rightStmts[0];
+		}
+		
+		// When there are no more statements, return what's next for the parent
+		const $parent = $stmt.parent;
+
+		if($parent.instanceOf("statement")) {
+			return CfgUtils.nextExecutedStmt($parent);			
+		} 
+		// There are no more statements
+		else if($parent.instanceOf("function")) {
+			return undefined;
+		} else {
+			throw new Error("Case not defined for nodes of type " + $parent.joinPointType);
+		}
+
+
+	
+	}
+	
+	/**
+	 * @return the the next stmt that executes unconditionally after the given scope, of undefined if no statement is executed
+	 */
+	static #nextExecutedStmtAfterScope($scope) {
+			// Before returning what's next to the scope of the statement, there are some special cases
+	
+			// Check if scope is a then/else of an if
+			const $scopeParent = $scope.parent;
+			if($scopeParent.instanceOf("if")) {
+				// Next stmt is what comes next of if
+				return CfgUtils.nextExecutedStmt($scopeParent);
+			}
+
+			// Check if scope is the body of a loop
+			if($scopeParent.instanceOf("loop")) {
+				
+				// Next stmt is what comes next of if
+				return CfgUtils.nextExecutedStmt($scopeParent);
+			}
+
+			// Special cases handled, check scope siblings
+			const rightStmts = $scope.siblingsRight;						
+			
+			// If there are no statements, return next of parent
+			if(rightStmts.length === 0) {
+				return CfgUtils.nextExecutedStmt($scope.parent);
+			}
+
+			return rightStmts[0];
 	}
 
 }

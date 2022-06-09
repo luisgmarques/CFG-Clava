@@ -8,7 +8,11 @@ class CfgNodeType {
 	static IF = new CfgNodeType("IF")
 	static THEN = new CfgNodeType("THEN")
 	static ELSE = new CfgNodeType("ELSE")		
-	static FOR = new CfgNodeType("FOR")
+	//static FOR = new CfgNodeType("FOR")
+	static LOOP_HEADER = new CfgNodeType("LOOP_HEADER")
+	static COND = new CfgNodeType("COND")
+	static INIT = new CfgNodeType("INIT")
+	static STEP = new CfgNodeType("STEP")	
 	static SCOPE = new CfgNodeType("SCOPE")
 	static INST_LIST = new CfgNodeType("INST_LIST")	
 	// To add: WHILE, DOWHILE?

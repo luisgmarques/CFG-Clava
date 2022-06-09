@@ -220,6 +220,18 @@ class CfgBuilder {
 			if(nodeType === CfgNodeType.INST_LIST) {
 				const stmts = node.data().getStmts();
 				const $lastStmt = stmts[stmts.length-1];
+				
+				const $nextExecutedStmt = CfgUtils.nextExecutedStmt($lastStmt);
+				let afterNode = this.#nodes.get($nextExecutedStmt.astId);
+
+				if(afterNode === undefined) {
+					afterNode = this.#endNode;
+				}
+					
+				
+				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));						
+				
+				/*
 				const rightNodes = $lastStmt.siblingsRight;
 
 				if(rightNodes.length > 0) {
@@ -238,10 +250,10 @@ class CfgBuilder {
 						}
 						const afterNode = this.#nodes.get(rightIf[0].astId);
 						Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));												
-					} else if($scopeParent.instanceOf("loop") && $scopeParent.kind === "for") {
-						// Connect to for 
-						const forNode = this.#nodes.get($scopeParent.astId);
-						Graphs.addEdge(this.#graph, node, forNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));													
+					//} else if($scopeParent.instanceOf("loop") && $scopeParent.kind === "for") {
+					//	// Connect to for 
+					//	const forNode = this.#nodes.get($scopeParent.astId);
+					//	Graphs.addEdge(this.#graph, node, forNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));													
 					} else if($scopeParent.instanceOf("scope")) {
 						// Connect to next statement of scope 
 						const rightScope = $scope.siblingsRight;						
@@ -261,6 +273,7 @@ class CfgBuilder {
 					}
 
 				}
+				*/
 			}
 				
 
