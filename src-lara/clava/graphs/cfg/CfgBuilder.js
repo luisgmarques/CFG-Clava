@@ -207,7 +207,7 @@ class CfgBuilder {
 
 			// IF NODE - TODO, adapt to specific node data
 			if(nodeType === CfgNodeType.IF) {
-				const ifStmt = node.data().getStmts()[0];
+				const ifStmt = node.data().getIf();
 
 				const thenStmt = ifStmt.then;
 				const thenNode = this.#nodes.get(thenStmt.astId);
@@ -230,7 +230,84 @@ class CfgBuilder {
 				}
 			}
 
+			if(nodeType === CfgNodeType.LOOP_HEADER) {
+				const $loop = node.data().getLoop();
+				
+				let afterStmt = undefined;
+				
+				switch($loop.kind) {
+					case "for":
+						afterStmt = $loop.init;
+						break;
+					case "while":
+						afterStmt = $loop.cond;
+						break;						
+					case "dowhile":
+						afterStmt = $loop.body;
+						break;					
+					default:
+						throw new Error("Case not defined for loops of kind " + $loop.kind);
+				}
+				
+				const afterNode = this.#nodes.get(afterStmt.astId);							
+				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));	
+			}
 
+			if(nodeType === CfgNodeType.COND) {
+				// Get kind of loop
+				const $condStmt = node.data().getStmt();
+				const $loop = $condStmt.parent;
+				isJoinPoint($loop, "loop");
+				
+				const kind = $loop.kind;
+				// True - first stmt of the loop body
+				const trueNode = this.#nodes.get($loop.body.astId);	
+				Graphs.addEdge(this.#graph, node, trueNode, new CfgEdge(CfgEdgeType.TRUE));	
+					
+				// False - next stmt of the loop
+				const $nextExecutedStmt = CfgUtils.nextExecutedStmt($loop);
+				const falseNode = this.#nodes.get($nextExecutedStmt.astId);		
+				Graphs.addEdge(this.#graph, node, falseNode, new CfgEdge(CfgEdgeType.FALSE));	
+				
+			}
+
+			if(nodeType === CfgNodeType.INIT) {				
+				// Get loop
+				const $initStmt = node.data().getStmt();
+				const $loop = $initStmt.parent;
+				isJoinPoint($loop, "loop");
+				if($loop.kind !== "for") {
+					throw new Error("Not implemented for loops of kind " + $loop.kind);
+				}
+				
+				const $condStmt = $loop.cond;
+				if($condStmt === undefined) {
+					throw new Error("Not implemented when for loops do not have a condition statement");					
+				}
+				
+				const afterNode = this.#nodes.get($condStmt.astId);		
+				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));					
+			}
+				
+				
+			if(nodeType === CfgNodeType.STEP) {				
+				// Get loop
+				const $stepStmt = node.data().getStmt();
+				const $loop = $stepStmt.parent;
+				isJoinPoint($loop, "loop");
+				if($loop.kind !== "for") {
+					throw new Error("Not implemented for loops of kind " + $loop.kind);
+				}				
+				
+				const $condStmt = $loop.cond;
+				if($condStmt === undefined) {
+					throw new Error("Not implemented when for loops do not have a condition statement");					
+				}
+				
+				const afterNode = this.#nodes.get($condStmt.astId);		
+				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));									
+			}
+			
 			// INST_LIST NODE
 			if(nodeType === CfgNodeType.INST_LIST) {
 				const stmts = node.data().getStmts();

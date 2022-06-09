@@ -4,6 +4,7 @@ laraImport("clava.graphs.cfg.nodedata.InstListNodeData");
 laraImport("clava.graphs.cfg.nodedata.ScopeNodeData");
 laraImport("clava.graphs.cfg.nodedata.LoopHeaderData");
 laraImport("clava.graphs.cfg.nodedata.HeaderData");
+laraImport("clava.graphs.cfg.nodedata.IfData");
 
 class DataFactory {
 
@@ -31,6 +32,8 @@ class DataFactory {
 		}
 		else if (cfgNodeType === CfgNodeType.ELSE) {
 			return new ScopeNodeData($stmt, cfgNodeType)
+		} else if (cfgNodeType === CfgNodeType.IF) {
+			return new IfData($stmt)
 		}
 			
 		return new CfgNode(cfgNodeType, $stmt);		

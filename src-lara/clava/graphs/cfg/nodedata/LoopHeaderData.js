@@ -9,6 +9,10 @@ class LoopHeaderData extends CfgNode {
 
     }
 
+	getLoop() {
+		return this.#stmt;
+	}
+
     toString() {
         const kind = this.#stmt.kind
 

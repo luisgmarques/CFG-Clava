@@ -7,4 +7,3 @@ laraImport("weaver.Query");
 			println(Graphs.toDot(cfg));
 
     }
-

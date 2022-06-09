@@ -166,7 +166,21 @@ class CfgUtils {
 			if($scopeParent.instanceOf("loop")) {
 				
 				// Next stmt is what comes next of if
-				return CfgUtils.nextExecutedStmt($scopeParent);
+				//return CfgUtils.nextExecutedStmt($scopeParent);
+				
+
+				switch($scopeParent.kind) {
+					case "while":
+					case "dowhile":
+						if($scopeParent.cond === undefined) {throw new Error("Not implemented when for loops do not have a condition statement");}
+						return $scopeParent.cond;
+					case "for":
+						if($scopeParent.step === undefined) {throw new Error("Not implemented when for loops do not have a step statement");}
+						return $scopeParent.step;
+					default:
+						throw new Error("Case not defined for loops of kind " + $loop.kind);	
+				}
+				
 			}
 
 			// Special cases handled, check scope siblings

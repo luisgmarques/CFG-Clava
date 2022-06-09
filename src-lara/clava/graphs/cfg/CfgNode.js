@@ -29,7 +29,7 @@ class CfgNode extends NodeData {
 	}
 
 	get name() {
-		return this.type.name(); 
+		return this.type.name; 
 	}
 
 	addStmt($stmt) {

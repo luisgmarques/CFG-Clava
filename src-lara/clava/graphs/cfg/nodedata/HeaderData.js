@@ -9,8 +9,12 @@ class HeaderData extends CfgNode {
 
     }
 
+	getStmt() {
+		return this.#stmt;
+	}
+
     toString() {
-        return this.#stmt.code
+        return this.name + ": " + this.#stmt.code
     }
 
 }

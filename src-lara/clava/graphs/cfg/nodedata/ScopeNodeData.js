@@ -27,7 +27,7 @@ class ScopeNodeData extends CfgNode {
     }
 
     toString() {
-    	   return "Scope";
+		return this.name;
     	   /*
         let code = "";
 
