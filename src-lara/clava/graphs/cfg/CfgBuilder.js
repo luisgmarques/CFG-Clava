@@ -65,7 +65,7 @@ class CfgBuilder {
 
 		//this._fillNodes();	
 		this._connectNodes();		
-		return this.#graph;
+		return new Cfg(this.#graph, this.#nodes, this.#startNode, this.#endNode);
 	}
 	
 
@@ -136,7 +136,7 @@ class CfgBuilder {
 		
 	}
 
-
+/*
 	_fillNodes() {
 		// TODO
 
@@ -147,7 +147,9 @@ class CfgBuilder {
 		// 0 statements
 
 	}
+*/
 
+/*
 	_connectNodes2() {
 
 		let nodes = []
@@ -175,7 +177,7 @@ class CfgBuilder {
 
 
 	}
-
+*/
 
 
 
@@ -339,7 +341,7 @@ class CfgBuilder {
 	}
 
 	
-	
+	/*
 	_connectNodes_old() {
 		// TODO
 		//Graphs.addEdge(this.#graph, this.#startNode, node, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
@@ -405,13 +407,7 @@ class CfgBuilder {
 						}
 						
 	
-						// Edge from the last statement to 
-						/* for(let k = i; k < nodes.length; k++) {
-							if(nodes[k] === siblingNode) {
-								Graphs.addEdge(this.#graph, nodes[k-1], this.#nodes.get(nodes[k-1].data().getStmts()[0].parent.parent.astId), new CfgEdge(CfgEdgeType.UNCONDITIONAL));
-								
-							}
-						} */
+
 						
 	
 					} else {	
@@ -439,7 +435,7 @@ class CfgBuilder {
 
 		}
 	}		
-
+*/
 		/**
 
 		for(const[key, value] of this.#nodes.entries()) {
@@ -487,7 +483,7 @@ class CfgBuilder {
 		*/
 
 
-
+/*
 	_ifLoops(ifScope, parent) {
 		for(let descendant of ifScope.data().stmts[0].descendants) {
 			if(descendant.instanceOf("if"))
@@ -505,7 +501,8 @@ class CfgBuilder {
 
 
 	}
-
+*/
+/*
 	_forLoops(forScope, parent) {
 		println(forScope)
 		if(forScope !== undefined) {
@@ -524,8 +521,10 @@ class CfgBuilder {
 			Graphs.addEdge(this.#graph, forScope, parent, new CfgEdge(CfgEdgeType.UNCONDITIONAL));
 
 	}
+	*/
 
 	
+	/*
 	_getDeclStmt($stmt) {
 		if($stmt.firstChild.instanceOf("declStmt")) {
 			return $stmt.firstChild
@@ -536,7 +535,9 @@ class CfgBuilder {
 
 		return undefined
 	}
+	*/
 
+	/*
 	_createCfgNode($stmt, nodeType) {
 		let declStmt = this._getDeclStmt($stmt)
 		let cfgNode = DataFactory.newData(nodeType, declStmt)
@@ -558,13 +559,16 @@ class CfgBuilder {
 		}
 		return cfgNode
 	}
+	*/
 
+	/*
 	_createLeaderStmt($stmt) {
 		const nodeType = CfgUtils.getNodeType($stmt);
 		let cfgNode = this._createCfgNode($stmt, nodeType)
 		let node = Graphs.addNode(this.#graph, cfgNode);
 		this.#nodes.set($stmt.astId, node)
 	}
+	*/
 
 	
 	/**
