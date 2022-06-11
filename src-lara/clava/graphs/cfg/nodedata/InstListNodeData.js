@@ -1,7 +1,8 @@
-laraImport("clava.graphs.cfg.CfgNode")
+laraImport("clava.graphs.cfg.CfgNodeData")
 laraImport("clava.graphs.cfg.CfgNodeType");
+laraImport("clava.graphs.cfg.CfgUtils");
 
-class InstListNodeData extends CfgNode {
+class InstListNodeData extends CfgNodeData {
 
 	#stmts;
 

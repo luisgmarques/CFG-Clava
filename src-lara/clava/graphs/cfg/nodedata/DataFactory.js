@@ -1,5 +1,5 @@
 laraImport("clava.graphs.cfg.CfgNodeType");
-laraImport("clava.graphs.cfg.CfgNode");
+laraImport("clava.graphs.cfg.CfgNodeData");
 laraImport("clava.graphs.cfg.nodedata.InstListNodeData");
 laraImport("clava.graphs.cfg.nodedata.ScopeNodeData");
 laraImport("clava.graphs.cfg.nodedata.LoopHeaderData");
@@ -36,7 +36,7 @@ class DataFactory {
 			return new IfData($stmt)
 		}
 			
-		return new CfgNode(cfgNodeType, $stmt);		
+		return new CfgNodeData(cfgNodeType, $stmt);		
 	}
 
 }

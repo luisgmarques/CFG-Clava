@@ -1,7 +1,7 @@
 laraImport("lara.graphs.Graphs")
 laraImport("lara.Strings")
 laraImport("lara.Check")
-laraImport("clava.graphs.cfg.CfgNode")
+laraImport("clava.graphs.cfg.CfgNodeData")
 laraImport("clava.graphs.cfg.CfgNodeType");
 laraImport("clava.graphs.cfg.CfgEdge")
 laraImport("clava.graphs.cfg.CfgEdgeType");
@@ -175,7 +175,7 @@ class CfgBuilder {
 
 			if(nodeType === CfgNodeType.COND) {
 				// Get kind of loop
-				const $condStmt = node.data().getStmt();
+				const $condStmt = node.data().nodeStmt;
 				const $loop = $condStmt.parent;
 				isJoinPoint($loop, "loop");
 				
@@ -193,7 +193,7 @@ class CfgBuilder {
 
 			if(nodeType === CfgNodeType.INIT) {				
 				// Get loop
-				const $initStmt = node.data().getStmt();
+				const $initStmt = node.data().nodeStmt;
 				const $loop = $initStmt.parent;
 				isJoinPoint($loop, "loop");
 				if($loop.kind !== "for") {
@@ -212,7 +212,7 @@ class CfgBuilder {
 				
 			if(nodeType === CfgNodeType.STEP) {				
 				// Get loop
-				const $stepStmt = node.data().getStmt();
+				const $stepStmt = node.data().nodeStmt;
 				const $loop = $stepStmt.parent;
 				isJoinPoint($loop, "loop");
 				if($loop.kind !== "for") {

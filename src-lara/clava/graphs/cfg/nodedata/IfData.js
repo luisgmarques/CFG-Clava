@@ -1,4 +1,7 @@
-class IfData extends CfgNode {
+laraImport("clava.graphs.cfg.CfgNodeData");
+laraImport("clava.graphs.cfg.CfgNodeType");
+
+class IfData extends CfgNodeData {
 
     //#stmt
 

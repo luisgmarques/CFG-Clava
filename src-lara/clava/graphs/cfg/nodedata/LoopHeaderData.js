@@ -1,4 +1,7 @@
-class LoopHeaderData extends CfgNode {
+laraImport("clava.graphs.cfg.CfgNodeData")
+laraImport("clava.graphs.cfg.CfgNodeType");
+
+class LoopHeaderData extends CfgNodeData {
 
     //#stmt
 
