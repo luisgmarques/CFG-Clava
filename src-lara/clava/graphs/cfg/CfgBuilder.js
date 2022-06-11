@@ -36,6 +36,11 @@ class CfgBuilder {
  	 * The end node of the graph
  	 */	
 	#endNode;
+
+	/**
+	 * Maps the astId to the corresponding temporary statement
+	 */
+	#temporaryStmts;
 	
 	constructor($jp) {
 		this.#jp = $jp;
@@ -53,6 +58,8 @@ class CfgBuilder {
 		// Create end node
 		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END));
 		this.#nodes.set('END', this.#endNode)		
+
+		this.#temporaryStmts = {};
 	}
 	
 	static buildGraph($jp) {
@@ -64,7 +71,10 @@ class CfgBuilder {
 		this._createNodes();
 
 		//this._fillNodes();	
-		this._connectNodes();		
+		this._connectNodes();	
+		
+		this._cleanCfg();
+
 		return new Cfg(this.#graph, this.#nodes, this.#startNode, this.#endNode);
 	}
 	
@@ -73,8 +83,11 @@ class CfgBuilder {
 		
 		for(const $currentJp of this.#jp.descendants) {
 			if($currentJp.instanceOf("scope")) {
-				$currentJp.insertBegin(ClavaJoinPoints.comment("SCOPE_START"))
-				$currentJp.insertEnd(ClavaJoinPoints.comment("SCOPE_END"))
+				const $scopeStart = $currentJp.insertBegin(ClavaJoinPoints.comment("SCOPE_START"))
+				this.#temporaryStmts[$scopeStart.astId] = $scopeStart;
+
+				const $scopeEnd = $currentJp.insertEnd(ClavaJoinPoints.comment("SCOPE_END"))
+				this.#temporaryStmts[$scopeEnd.astId] = $scopeEnd;				
 			}
 		}
 	}
@@ -260,6 +273,20 @@ class CfgBuilder {
 		}
 	}
 	
+
+	_cleanCfg() {		
+		// Remove temporary instructions from the code
+		for(const stmtId in this.#temporaryStmts) {
+			this.#temporaryStmts[stmtId].detach();
+		}
+
+		// Remove temporary instructions from the instList nodes and this.#nodes
+		
+
+		// Remove empty instList CFG nodes
+
+	}
+
 	/**
 	 * Returns the node corresponding to this statement, or creates a new one if one does not exist yet.
 	 */

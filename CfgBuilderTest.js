@@ -2,9 +2,17 @@ laraImport("clava.graphs.cfg.CfgBuilder");
 laraImport("weaver.Query");
 
     for(var $function of Query.search("function")) {
+		const functionCodeBefore = $function.code;
+    	
 		const cfg = CfgBuilder.buildGraph($function);
 			println("Cfg for function at " + $function.location + " (you can use http://webgraphviz.com/ to test):");
 			println(Graphs.toDot(cfg.graph));
+
+		const functionCodeAfter = $function.code;
+
+		if(functionCodeBefore !== functionCodeAfter){
+			throw new Error("Code has changed!\n" + functionCodeAfter);
+		}
 
 		for(const node of cfg.graph.nodes()) {
 			//println("Node: " + node.data().type);

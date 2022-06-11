@@ -1,116 +1,78 @@
 int foo() {
-   //SCOPE_START
    int i;
    int k;
    int h;
    int m;
    int b;
    {
-      //SCOPE_START
       int scope;
       int scopeStmt2;
-      //SCOPE_END
    }
    if(0 == 0) {
-      //SCOPE_START
       int ifWithoutElse;
       int ifWithoutElseStmt2;
-      //SCOPE_END
    }
    int abc;
    abc = 0;
    if(0 != 0) {
-      //SCOPE_START
       {
-         //SCOPE_START
          {
-            //SCOPE_START
             int ifWithElseThen;
             int ifWithElseThenStmt2;
-            //SCOPE_END
          }
          int j;
          if(1 == 1) {
-            //SCOPE_START
             int if1equals1;
-            //SCOPE_END
          }
          else {
-            //SCOPE_START
             int elseif;
             if(2 == 2) {
-               //SCOPE_START
                int ifihefi;
-               //SCOPE_END
             }
             int ijfij;
-            //SCOPE_END
          }
-         //SCOPE_END
       }
       int s;
-      //SCOPE_END
    }
    else {
-      //SCOPE_START
       int ifWithElseElse;
       int ifWithElseElseStmt2;
-      //SCOPE_END
    }
    int afterIfElse;
    for(int i = 0; i < 10; i++) {
-      //SCOPE_START
       int loopBody;
       int loopBodyStmt2;
       for(int l = 0; l < 5; l++) {
-         //SCOPE_START
          int innerFor;
          for(int k = 0; k < 4; k++) {
-            //SCOPE_START
             int innerInnerFor;
             {
-               //SCOPE_START
                int jijrg;
-               //SCOPE_END
             }
             {
-               //SCOPE_START
                int qqq;
-               //SCOPE_END
             }
             for(int m = 0; m < 4; m++) {
-               //SCOPE_START
                int innerIfFor;
                int ineneuhg;
                if(3 == 3) {
-                  //SCOPE_START
                   int jgji;
                   int jijgij;
-                  //SCOPE_END
                }
                int ijfiji;
-               //SCOPE_END
             }
-            //SCOPE_END
          }
-         //SCOPE_END
       }
-      //SCOPE_END
    }
    int betweenFor;
    for(int k = 0; k < 4; k++) {
-      //SCOPE_START
       int forLoop;
       int forLoop2;
       for(int j = 0; j < 4; j++) {
-         //SCOPE_START
          int hkngkg;
          int argrghr;
-         //SCOPE_END
       }
-      //SCOPE_END
    }
-   //SCOPE_END
 }
 
 /*
