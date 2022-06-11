@@ -23,7 +23,7 @@ class CfgUtils {
 		
 		// Loop stmt
 		if($stmt.instanceOf("loop")) {
-			return CfgNodeType.LOOP_HEADER;			
+			return CfgNodeType.LOOP;			
 		}		
 		
 		
