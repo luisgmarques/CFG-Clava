@@ -9,34 +9,25 @@ laraImport("clava.graphs.cfg.nodedata.IfData");
 class DataFactory {
 
 	static newData(cfgNodeType, $stmt) {
-		if(cfgNodeType === CfgNodeType.INST_LIST) {
-			return new InstListNodeData($stmt);
+
+		switch(cfgNodeType) {
+			case CfgNodeType.INST_LIST:
+				return new InstListNodeData($stmt); 
+			case CfgNodeType.THEN:
+			case CfgNodeType.ELSE:
+			case CfgNodeType.SCOPE:
+				return new ScopeNodeData($stmt);	
+			case CfgNodeType.INIT:
+			case CfgNodeType.COND:
+			case CfgNodeType.STEP:
+				return new HeaderData($stmt, cfgNodeType);
+			case CfgNodeType.IF:
+				return new IfData($stmt);
+			case CfgNodeType.LOOP:
+				return new LoopData($stmt);
+			default:		
+				return new CfgNodeData(cfgNodeType, $stmt);		
 		}
-		else if (cfgNodeType === CfgNodeType.SCOPE) {
-			return new ScopeNodeData($stmt)
-		}
-		else if (cfgNodeType === CfgNodeType.LOOP) {
-			return new LoopData($stmt)
-		}
-		else if (cfgNodeType === CfgNodeType.COND) {
-			return new HeaderData($stmt, cfgNodeType)
-		}
-		else if (cfgNodeType === CfgNodeType.STEP) {
-			return new HeaderData($stmt, cfgNodeType)
-		}
-		else if (cfgNodeType === CfgNodeType.INIT) {
-			return new HeaderData($stmt, cfgNodeType)
-		}
-		else if (cfgNodeType === CfgNodeType.THEN) {
-			return new ScopeNodeData($stmt, cfgNodeType)
-		}
-		else if (cfgNodeType === CfgNodeType.ELSE) {
-			return new ScopeNodeData($stmt, cfgNodeType)
-		} else if (cfgNodeType === CfgNodeType.IF) {
-			return new IfData($stmt)
-		}
-			
-		return new CfgNodeData(cfgNodeType, $stmt);		
 	}
 
 }
