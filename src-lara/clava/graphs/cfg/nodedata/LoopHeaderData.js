@@ -1,4 +1,4 @@
-laraImport("clava.graphs.cfg.CfgNodeData")
+laraImport("clava.graphs.cfg.CfgNodeData");
 laraImport("clava.graphs.cfg.CfgNodeType");
 
 class LoopHeaderData extends CfgNodeData {
@@ -6,7 +6,7 @@ class LoopHeaderData extends CfgNodeData {
     //#stmt
 
     constructor($stmt){
-        super(CfgNodeType.LOOP_HEADER, $stmt)
+        super(CfgNodeType.LOOP, $stmt)
 
         //this.#stmt = $stmt
 

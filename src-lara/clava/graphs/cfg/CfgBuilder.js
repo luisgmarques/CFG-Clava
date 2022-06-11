@@ -150,7 +150,7 @@ class CfgBuilder {
 				}
 			}
 
-			if(nodeType === CfgNodeType.LOOP_HEADER) {
+			if(nodeType === CfgNodeType.LOOP) {
 				const $loop = node.data().loop;
 				
 				let afterStmt = undefined;

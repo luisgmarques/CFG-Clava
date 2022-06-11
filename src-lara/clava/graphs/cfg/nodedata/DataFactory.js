@@ -15,7 +15,7 @@ class DataFactory {
 		else if (cfgNodeType === CfgNodeType.SCOPE) {
 			return new ScopeNodeData($stmt)
 		}
-		else if (cfgNodeType === CfgNodeType.LOOP_HEADER) {
+		else if (cfgNodeType === CfgNodeType.LOOP) {
 			return new LoopHeaderData($stmt)
 		}
 		else if (cfgNodeType === CfgNodeType.COND) {

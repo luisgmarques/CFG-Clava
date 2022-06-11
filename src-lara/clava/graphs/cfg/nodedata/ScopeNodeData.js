@@ -1,4 +1,4 @@
-laraImport("clava.graphs.cfg.CfgNodeData")
+laraImport("clava.graphs.cfg.CfgNodeData");
 laraImport("clava.graphs.cfg.CfgNodeType");
 
 class ScopeNodeData extends CfgNodeData {

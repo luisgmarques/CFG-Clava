@@ -2,21 +2,21 @@
  * Enumeration of CFG node types.
  */
 class CfgNodeType {
-	
+
 	static START = new CfgNodeType("START")
 	static END = new CfgNodeType("END")
 	static IF = new CfgNodeType("IF")
 	static THEN = new CfgNodeType("THEN")
-	static ELSE = new CfgNodeType("ELSE")		
+	static ELSE = new CfgNodeType("ELSE")
 	//static FOR = new CfgNodeType("FOR")
-	static LOOP_HEADER = new CfgNodeType("LOOP_HEADER")
+	static LOOP = new CfgNodeType("LOOP")
 	static COND = new CfgNodeType("COND")
 	static INIT = new CfgNodeType("INIT")
-	static STEP = new CfgNodeType("STEP")	
+	static STEP = new CfgNodeType("STEP")
 	static SCOPE = new CfgNodeType("SCOPE")
-	static INST_LIST = new CfgNodeType("INST_LIST")	
+	static INST_LIST = new CfgNodeType("INST_LIST")
 	// To add: WHILE, DOWHILE?
-	
+
 	//static SCOPE_DATA = new CfgNodeType("SCOPE_DATA")	
 	//static BODY = new CfgNodeType("BODY")
 	//static SCOPE_START = new CfgNodeType("SCOPE_START")
@@ -26,13 +26,13 @@ class CfgNodeType {
 	//static IF_END = new CfgNodeType("IF_END")
 	//static IF_START = new CfgNodeType("IF_START")
 	//static UNDEFINED = new CfgNodeType("UNDEFINED")	
-	
+
 	#name;
-	
+
 	constructor(name) {
-	    this.#name = name;
+		this.#name = name;
 	}
-	
+
 	get name() {
 		return this.#name;
 	}
