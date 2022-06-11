@@ -51,13 +51,12 @@ class CfgBuilder {
 		this.#graph = cytoscape({ /* options */ });
 		this.#nodes = new Map;
 		
-		// Create start node
+		// Create start and end nodes
+		// Do not add them to #nodes, since they have no associated statements  
 		this.#startNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.START));
-		this.#nodes.set('START', this.#startNode)
-		
-		// Create end node
+		//this.#nodes.set('START', this.#startNode)
 		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END));
-		this.#nodes.set('END', this.#endNode)		
+		//this.#nodes.set('END', this.#endNode)		
 
 		this.#temporaryStmts = {};
 	}
@@ -130,14 +129,21 @@ class CfgBuilder {
 		Graphs.addEdge(this.#graph, this.#startNode, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));		
 		
 
-		for(const node of this.#nodes.values()) {
+		for(const astId of this.#nodes.keys()) {
+
+			const node = this.#nodes.get(astId);
+			
+			// Only add connections for astIds of leader statements
+			if(node.data().nodeStmt.astId !== astId) {
+				continue;
+			}
 
 			const nodeType = node.data().type;
 
 			if(nodeType === undefined) {
 				//printlnObject( node.data());
-				//throw new Error("Node type is undefined: ");
-				continue;
+				throw new Error("Node type is undefined: ");
+				//continue;
 			}			
 
 			// IF NODE - TODO, adapt to specific node data
@@ -255,7 +261,7 @@ class CfgBuilder {
 					afterNode = this.#endNode;
 				}
 					
-				
+				//println("Adding edge for node " + node.data().id)
 				Graphs.addEdge(this.#graph, node, afterNode, new CfgEdge(CfgEdgeType.UNCONDITIONAL));						
 			}
 			
@@ -281,7 +287,23 @@ class CfgBuilder {
 		}
 
 		// Remove temporary instructions from the instList nodes and this.#nodes
-		
+		for(const node of this.#nodes.values()) {
+			
+			// Only inst lists need to be cleaned
+			if(node.data().type !== CfgNodeType.INST_LIST) {
+				continue;
+			}
+
+			// Filter stmts that are temporary statements
+			const filteredStmts = node.data().stmts.filter($stmt => this.#temporaryStmts[$stmt.astId] === undefined);
+
+			if(filteredStmts.length !== node.data().stmts.length) {
+				//println("Replacing " + node.data().stmts + " with " + filteredStmts);
+				node.data().stmts = filteredStmts;
+			}
+
+			//println("Node: " + node);
+		}
 
 		// Remove empty instList CFG nodes
 

@@ -34,7 +34,15 @@ class InstListNodeData extends CfgNodeData {
         return this.#stmts;
     }
 
+    set stmts(stmts) {
+        this.#stmts = stmts;
+    }
+
     getLastStmt() {
+        if(this.#stmts.length === 0) {
+            return undefined;
+        }
+
         return this.#stmts[this.#stmts.length-1];
     }
 
