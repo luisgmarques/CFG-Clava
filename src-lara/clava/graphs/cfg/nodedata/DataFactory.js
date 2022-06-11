@@ -16,7 +16,7 @@ class DataFactory {
 			case CfgNodeType.THEN:
 			case CfgNodeType.ELSE:
 			case CfgNodeType.SCOPE:
-				return new ScopeNodeData($stmt);	
+				return new ScopeNodeData($stmt, cfgNodeType);	
 			case CfgNodeType.INIT:
 			case CfgNodeType.COND:
 			case CfgNodeType.STEP:

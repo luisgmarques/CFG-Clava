@@ -286,16 +286,45 @@ class CfgBuilder {
 			this.#temporaryStmts[stmtId].detach();
 		}
 
+		/*
+		println("Keys in nodes before:");
+		for(const key of this.#nodes.keys()) {
+			println("Key: " + key);
+		}
+		*/
+
 		// Remove temporary instructions from the instList nodes and this.#nodes
 		for(const node of this.#nodes.values()) {
 			
 			// Only inst lists need to be cleaned
 			if(node.data().type !== CfgNodeType.INST_LIST) {
+				const tempStmts = node.data().stmts.filter($stmt => this.#temporaryStmts[$stmt.astId] !== undefined);
+				if(tempStmts.length > 0) {
+					println("Node '"+node.data().type+"' has temporary stmts: " + tempStmts);
+				}
 				continue;
 			}
 
 			// Filter stmts that are temporary statements
-			const filteredStmts = node.data().stmts.filter($stmt => this.#temporaryStmts[$stmt.astId] === undefined);
+
+			const filteredStmts = [];
+			for(const $stmt of node.data().stmts) {
+				// If not a temporary stmt, add to filtered list
+				if(this.#temporaryStmts[$stmt.astId] === undefined) {
+					filteredStmts.push($stmt);
+				}
+				// Otherwise, remove from this.#nodes
+				else {
+//					println("Deleting " + $stmt.astId);
+//					println("Before: " + this.#nodes.get($stmt.astId));
+//					println("Has: " + this.#nodes.has($stmt.astId));										
+					this.#nodes.delete($stmt.astId);
+//					println("After: " + this.#nodes.get($stmt.astId));					
+//					println("Has: " + this.#nodes.has($stmt.astId));										
+				}
+			}
+			
+			//node.data().stmts.filter($stmt => this.#temporaryStmts[$stmt.astId] === undefined);
 
 			if(filteredStmts.length !== node.data().stmts.length) {
 				//println("Replacing " + node.data().stmts + " with " + filteredStmts);
@@ -305,7 +334,58 @@ class CfgBuilder {
 			//println("Node: " + node);
 		}
 
+		/*
+		println("Keys in nodes after:");
+		for(const key of this.#nodes.keys()) {
+			println("Key: " + key);
+		}
+		*/
+
 		// Remove empty instList CFG nodes
+		for(const node of this.#graph.nodes()) {
+			
+			// Only nodes that are inst lists
+			if(node.data().type !== CfgNodeType.INST_LIST) {
+				continue;
+			}
+
+			// Only empty nodes
+			if(node.data().stmts.length > 0) {
+				continue;
+			} 
+
+			// Get edges of node
+			const edges = node.connectedEdges();
+
+			// Get target of this node
+			let targetNode = undefined;
+			for(const edge of edges) {
+				if(edge.source().equals(node)) {
+					targetNode = edge.target();
+					//println("Target node: " + targetNode.data());
+				}
+			}
+
+			if(targetNode === undefined) {
+				throw new Error("Could not find target node of node " + node.data().id);
+			}
+
+			
+			for(const edge of edges) {
+				// Add new connections for nodes that connect to this node
+				if(edge.target().equals(node)) {
+					Graphs.addEdge(this.#graph, edge.source(), targetNode, new CfgEdge(edge.data().type));		
+				}
+
+				//println("Edge: " + edge);
+				//println("Edge source: " + edge.source().data());
+				//println("Edge target: " + edge.target().data());
+			}
+			
+			// Remove node
+			node.remove();
+			//println("REMOVE NODE: " + node.data());
+		}
 
 	}
 

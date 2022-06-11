@@ -32,4 +32,18 @@ laraImport("weaver.Query");
 				}
 			}
 		}
+
+
+/*
+
+		for(const key of cfg.nodes.keys()) {
+			//println("Key: " + key);
+			const node = cfg.nodes.get(key);
+			//println("Node stmts: " + node.data().stmts.map(stmt => stmt.astId));
+
+			if(key.startsWith("stmt_")) {
+				println("Stmts: " + node.data().stmts.map(stmt => stmt.code));
+			}
+		}
+ */
     }

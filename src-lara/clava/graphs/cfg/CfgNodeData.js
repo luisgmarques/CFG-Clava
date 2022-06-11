@@ -70,6 +70,10 @@ class CfgNodeData extends NodeData {
 		return this.#nodeStmt;
 	}
 
+	set nodeStmt($stmt) {
+		this.#nodeStmt = $stmt;
+	}
+
 	/**
 	 * The stmts associated with this CFG node.
 	 */
