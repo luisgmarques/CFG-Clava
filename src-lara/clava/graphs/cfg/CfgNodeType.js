@@ -36,4 +36,8 @@ class CfgNodeType {
 	get name() {
 		return this.#name;
 	}
+
+	toString() {
+		return this.name;
+	}
 }

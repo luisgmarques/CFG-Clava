@@ -75,7 +75,7 @@ class CfgNodeData extends NodeData {
 	 */
 	get stmts() {
 		// By default, the list only containts the node statement
-		return [this.nodeStmt];
+		return this.nodeStmt !== undefined ? [this.nodeStmt] : [];
 	}
 
 	toString() {
