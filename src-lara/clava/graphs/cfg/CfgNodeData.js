@@ -70,6 +70,14 @@ class CfgNodeData extends NodeData {
 		return this.#nodeStmt;
 	}
 
+	/**
+	 * The stmts associated with this CFG node.
+	 */
+	get stmts() {
+		// By default, the list only containts the node statement
+		return [this.nodeStmt];
+	}
+
 	toString() {
 
 		// By default, content of the node is the name of the type

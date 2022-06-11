@@ -35,6 +35,13 @@ class InstListNodeData extends CfgNodeData {
         return this.#stmts[this.#stmts.length-1];
     }
 
+    /**
+     * Returns all the statements of this instruction list.
+     */
+    get stmts() {
+		return this.stmts;
+	}
+
     toString() {
         let code = "";
 
