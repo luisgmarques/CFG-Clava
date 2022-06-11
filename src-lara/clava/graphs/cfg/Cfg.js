@@ -32,7 +32,7 @@ class Cfg {
 	}
 
 	get nodes() {
-		return this.#graph;
+		return this.#nodes;
 	}
 
 	get startNode() {

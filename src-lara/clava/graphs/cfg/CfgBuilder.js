@@ -91,7 +91,9 @@ class CfgBuilder {
 			
 			if(CfgUtils.isLeader($stmt)) {
 				this._getOrAddNode($stmt, true);
-				
+					//println("STMTS: " + newNode.data().stmts);
+				 
+
 				// TODO: If INST_LIST, associate all other statements of the INST_LIST to the node?
 			} 
 		}
@@ -263,14 +265,25 @@ class CfgBuilder {
 	 */
 	_getOrAddNode($stmt, create) {
 		const _create = create ?? false;
-		let node = this.#nodes[$stmt.astId];
+		let node = this.#nodes.get($stmt.astId);
 
 		// If there is not yet a node for this statement, create
 		if(node === undefined && _create) {
 
 			const nodeType = CfgUtils.getNodeType($stmt);
 			node = Graphs.addNode(this.#graph, DataFactory.newData(nodeType, $stmt));
-			this.#nodes.set($stmt.astId, node);
+
+			// Associate all statements of graph node
+			for(const $nodeStmt of node.data().stmts) {
+				// Check if it has not been already added
+				if(this.#nodes.get($nodeStmt.astId) !== undefined) {
+					throw new Error("Adding mapping twice for statement " + $nodeStmt.astId + "@" + $nodeStmt.location);
+				}
+
+				//println("Adding " + $nodeStmt.astId + " to node " + node.data().id);
+				this.#nodes.set($nodeStmt.astId, node);
+			}
+			//this.#nodes.set($stmt.astId, node);
 
 		} else {
 			throw new Error("No node for statement at line " + $stmt.line);
