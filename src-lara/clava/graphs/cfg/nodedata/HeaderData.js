@@ -3,7 +3,7 @@ class HeaderData extends CfgNode {
     #stmt
 
     constructor($stmt, nodeType) {
-        super(nodeType)
+        super(nodeType, $stmt)
 
         this.#stmt = $stmt
 

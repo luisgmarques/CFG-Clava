@@ -7,31 +7,56 @@ laraImport("clava.ClavaJoinPoints");
  */
 class CfgNode extends NodeData {
 	
-	stmts;
-	type;
+	/**
+	 * The statement that originated this node
+	 */
+	#nodeStmt;
+
+	//stmts;
+	#type;
+
+	#name;
 	
 	constructor(cfgNodeType, $stmt) {
-		super();
-		
+		//println("Stmt undefined? " + ($stmt === undefined));
+		const id = $stmt === undefined ? undefined : $stmt.astId;
+		//println("Id: " + id)
+		// Use AST node id as graph node id
+		super(id);
+
+		this.#nodeStmt = $stmt;
 		/**if(cfgNodeType === undefined) {
 			throw new Error("Must define a cfg node type");
 		}*/
 
-		this.stmts = [];
+		//this.stmts = [];
 		
 		// If statement defined, add it to list of statements
+		/*
 		if($stmt !== undefined) {
 			this.stmts.push($stmt);			
 		}
+		*/
 
-		this.type = cfgNodeType;
+		this.#type = cfgNodeType;
 
+	}
+
+	get type() {
+		return this.#type;
 	}
 
 	get name() {
-		return this.type.name; 
+		if(this.#name === undefined) {
+			const typeName = this.#type.name;
+			this.#name = typeName.substring(0,1).toUpperCase() + typeName.substring(1,typeName.length).toLowerCase();
+		}
+
+		return this.#name;
+		//return this.type.name; 
 	}
 
+	/*
 	addStmt($stmt) {
 		this.stmts.push($stmt);
 	}
@@ -39,8 +64,18 @@ class CfgNode extends NodeData {
 	getStmts() {
 		return this.stmts
 	}
+	*/
+
+	get nodeStmt() {
+		return this.#nodeStmt;
+	}
 
 	toString() {
+
+		// By default, content of the node is the name of the type
+		return this.name.substring(0,1).toUpperCase() + this.name.substring(1,this.name.length).toLowerCase();
+
+		/*
 		// Special cases
 
 		if(this.type === CfgNodeType.START) {
@@ -74,6 +109,7 @@ class CfgNode extends NodeData {
 		}
 		
 		return code;
+		*/
 	}
 
 

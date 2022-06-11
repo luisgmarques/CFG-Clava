@@ -3,7 +3,7 @@ class ScopeNodeData extends CfgNode {
     #scope;
 
     constructor($scope, nodeType=CfgNodeType.SCOPE) {
-        super(nodeType)
+        super(nodeType, $scope)
 
         isJoinPoint($scope, "scope");   
 
@@ -22,22 +22,15 @@ class ScopeNodeData extends CfgNode {
 
     }
 
-    getScope() {
+    get scope() {
     		return this.#scope;
     }
 
+    /*
     toString() {
 		return this.name;
-    	   /*
-        let code = "";
-
-        for(const $stmt of this.getStmts()) {
-            code += $stmt.code + "\n";
-        }
-
-        return code;
-        */
     }
+    */
 
 
 

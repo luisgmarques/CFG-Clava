@@ -1,20 +1,21 @@
 class IfData extends CfgNode {
 
-    #stmt
+    //#stmt
 
     constructor($stmt){
-        super(CfgNodeType.IF)
+        super(CfgNodeType.IF, $stmt)
 
-        this.#stmt = $stmt
+        //this.#stmt = $stmt
 
     }
 
-	getIf() {
-		return this.#stmt;
+	get if() {
+		return this.nodeStmt;
+        //return this.#stmt;
 	}
 
     toString() {
-        return "IF: " + this.#stmt.cond.code;
+        return "if(" + this.if.cond.code + ")";
     }
 
 

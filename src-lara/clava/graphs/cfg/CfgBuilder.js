@@ -83,7 +83,6 @@ class CfgBuilder {
 	 * Creates all nodes (except start and end), with only the leader statement
 	 */
 	_createNodes() {
-		//println("Start jp: " + this.#jp.dump);
 		
 		// Test all statements for leadership
 		// If they are leaders, create node
@@ -128,7 +127,7 @@ class CfgBuilder {
 
 			// IF NODE - TODO, adapt to specific node data
 			if(nodeType === CfgNodeType.IF) {
-				const ifStmt = node.data().getIf();
+				const ifStmt = node.data().if;
 
 				const thenStmt = ifStmt.then;
 				const thenNode = this.#nodes.get(thenStmt.astId);
@@ -152,7 +151,7 @@ class CfgBuilder {
 			}
 
 			if(nodeType === CfgNodeType.LOOP_HEADER) {
-				const $loop = node.data().getLoop();
+				const $loop = node.data().loop;
 				
 				let afterStmt = undefined;
 				
@@ -231,9 +230,9 @@ class CfgBuilder {
 			
 			// INST_LIST NODE
 			if(nodeType === CfgNodeType.INST_LIST) {
-				const stmts = node.data().getStmts();
-				const $lastStmt = stmts[stmts.length-1];
-				
+				//const stmts = node.data().getStmts();
+				//const $lastStmt = stmts[stmts.length-1];
+				const $lastStmt = node.data().getLastStmt();
 				const $nextExecutedStmt = CfgUtils.nextExecutedStmt($lastStmt);
 				let afterNode = this.#nodes.get($nextExecutedStmt.astId);
 
@@ -247,8 +246,8 @@ class CfgBuilder {
 			
 			// SCOPE_NODEs
 			if(nodeType === CfgNodeType.SCOPE || nodeType === CfgNodeType.THEN || nodeType === CfgNodeType.ELSE) {
-				const stmts = node.data().getStmts();
-				const $scope = node.data().getScope();
+				//const stmts = node.data().getStmts();
+				const $scope = node.data().scope;
 
 				// Scope connects to its own first statement that will be an INST_LIST
 				let afterNode = this.#nodes.get($scope.firstStmt.astId);
@@ -264,8 +263,8 @@ class CfgBuilder {
 	 */
 	_getOrAddNode($stmt, create) {
 		const _create = create ?? false;
-		//println($stmt.dump)
 		let node = this.#nodes[$stmt.astId];
+
 		// If there is not yet a node for this statement, create
 		if(node === undefined && _create) {
 

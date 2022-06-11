@@ -22,25 +22,24 @@ class Cfg {
 	
 	constructor(graph, nodes, startNode, endNode) {
 		this.#graph = graph;
-		this.nodes = nodes;
+		this.#nodes = nodes;
 		this.#startNode = startNode;
 		this.#endNode = endNode;		
 	}
 
-	getGraph() {
+	get graph() {
 		return this.#graph;
 	}
 
-
-	getNodes() {
+	get nodes() {
 		return this.#graph;
 	}
 
-	getStartNode() {
+	get startNode() {
 		return this.#startNode;
 	}
 
-	getEndNode() {
+	get endNode() {
 		return this.#endNode;
 	}	
 }

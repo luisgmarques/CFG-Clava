@@ -1,24 +1,21 @@
 class LoopHeaderData extends CfgNode {
 
-    #stmt
+    //#stmt
 
     constructor($stmt){
-        super(CfgNodeType.LOOP_HEADER)
+        super(CfgNodeType.LOOP_HEADER, $stmt)
 
-        this.#stmt = $stmt
+        //this.#stmt = $stmt
 
     }
 
-	getLoop() {
-		return this.#stmt;
+	get loop() {
+		return this.nodeStmt;
 	}
 
     toString() {
-        const kind = this.#stmt.kind
-
-        return "LOOP_HEADER: " + kind
+        return "Loop: " + this.loop.kind;
     }
-
 
 
 }
