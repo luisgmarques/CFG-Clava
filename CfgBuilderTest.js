@@ -17,10 +17,10 @@ laraImport("weaver.Query");
 		for(const node of cfg.graph.nodes()) {
 			//println("Node: " + node.data().type);
 			//println("Stmts: " + node.data().stmts);			
-			const nodes = cfg.nodes;
+			//const nodes = cfg.nodes;
 			// Verify if all stmts have a mapping in nodes
 			for(const stmt of node.data().stmts) {
-				const graphNode= nodes.get(stmt.astId);
+				const graphNode= cfg.getNode(stmt);
 				if(graphNode === undefined) {
 					println("Stmt "+stmt.astId+" " + stmt.joinPointType + "@" + stmt.location + " does not have a graph node");
 					continue;

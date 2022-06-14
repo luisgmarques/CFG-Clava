@@ -31,8 +31,21 @@ class Cfg {
 		return this.#graph;
 	}
 
-	get nodes() {
-		return this.#nodes;
+	/**
+	 * Returns the graph node where the given statement belongs.
+	 * 
+	 * @param {$stmt|string} $stmt A statement join point, or a string with the astId of the join point
+	 */
+	getNode($stmt) {
+		// If string, assume it is astId
+		const astId = isString($stmt) ? $stmt :
+					  isJoinPoint($stmt) ? $stmt.astId : undefined; 
+					  
+		if(astId === undefined) {
+			throw new Error("Invalid input, must be either a join point or a string");
+		}
+
+		return this.#nodes.get(astId);
 	}
 
 	get startNode() {
