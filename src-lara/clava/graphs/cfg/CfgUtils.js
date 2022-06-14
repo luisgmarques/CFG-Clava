@@ -194,4 +194,26 @@ class CfgUtils {
 			return rightStmts[0];
 	}
 
+	static getTarget(node, edgeType) {
+		let target = undefined;
+			
+		for(const edge of node.connectedEdges()) {
+			
+			// Only targets of this node
+			if(edge.source() !== node) {
+				continue;
+			}
+			
+			if(edge.data().type === edgeType) {
+				if(target !== undefined) {
+					throw new Error("Found duplicated edge of type '"+edgeType+"' in node " + node.data());
+				}
+
+				target = edge.target();
+			}
+		}
+			
+		
+		return target;
+	}
 }

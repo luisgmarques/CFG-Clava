@@ -16,4 +16,8 @@ class CfgEdgeType {
 	get name() {
 		return this.#name;
 	}
+
+	toString() {
+		return this.name;
+	}
 }

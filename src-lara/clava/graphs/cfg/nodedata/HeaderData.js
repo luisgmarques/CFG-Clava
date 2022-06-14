@@ -1,4 +1,5 @@
 laraImport("clava.graphs.cfg.CfgNodeData");
+laraImport("clava.graphs.cfg.CfgNodeType");
 
 class HeaderData extends CfgNodeData {
 
@@ -20,5 +21,13 @@ class HeaderData extends CfgNodeData {
     toString() {
         return this.name + ": " + this.nodeStmt.code;
     }
+
+    isBranch() {
+        if(this.type === CfgNodeType.COND) {
+            return true;
+        }
+        
+		return false;
+	}
 
 }

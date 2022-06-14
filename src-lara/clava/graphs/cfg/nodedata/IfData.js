@@ -21,6 +21,8 @@ class IfData extends CfgNodeData {
         return "if(" + this.if.cond.code + ")";
     }
 
-
+	isBranch() {
+		return true;
+	}
 
 }

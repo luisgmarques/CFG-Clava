@@ -387,6 +387,13 @@ class CfgBuilder {
 			//println("REMOVE NODE: " + node.data());
 		}
 
+		/*
+		// Add link to node in data()
+		for(const node of this.#graph.nodes()) {
+			node.data().node = node;
+		}
+		*/
+
 	}
 
 	/**

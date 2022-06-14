@@ -16,6 +16,14 @@ class CfgNodeData extends NodeData {
 	#type;
 
 	#name;
+
+	// Internal reference to the node of this data
+	//#node
+
+	// For caching
+	//#targetTrue
+	//#targetFalse
+	//#targetUncond	
 	
 	constructor(cfgNodeType, $stmt, id) {
 		// If id defined, give priority to it. Othewise, use stmt astId, if defined
@@ -42,7 +50,14 @@ class CfgNodeData extends NodeData {
 
 		this.#type = cfgNodeType;
 
+		//this.#node = undefined;
 	}
+
+	/*
+	set node(node) {
+		this.#node = node;
+	}
+	*/
 
 	get type() {
 		return this.#type;
@@ -126,6 +141,60 @@ class CfgNodeData extends NodeData {
 		*/
 	}
 
+	/**
+	 * 
+	 * @returns true if this is a branch node, false otherwise. If this is a branch node, contains two edges, true and false. 
+	 * If not, contains only one uncoditional edge (expect if it is the end node, which contains no edges). 
+	 */
+	isBranch() {
+		return false;
+	}
 
+	/*
+	get targetTrue() {
+		if(this.#targetTrue === undefined) {
+			this.#targetTrue = this.#getTarget(CfgEdgeType.TRUE);						
+		}	
+
+		return this.#targetTrue;
+	}
+
+	get targetFalse() {
+
+	}
+
+	get targetUncond() {
+
+	}
+	*/	
+/*
+	#getTarget(edgeType) {
+		let target = undefined;
+			
+		for(const edge of this.#node.connectedEdges()) {
+			
+			// Only targets of this node
+			if(edge.source() !== this.#node) {
+				continue;
+			}
+			
+			if(edge.data().type === edgeType) {
+				if(target !== undefined) {
+					throw new Error("Found duplicated edge of type '"+edgeType+"' in node " + this.#node.data());
+				}
+
+				target = edge.target();
+			}
+		}
+			
+
+			//const trueTargets = this.#node.connectedEdges().targets(edge => {printlnObject(edge.data());return true;});
+			//const trueTargets = this.#node.connectedEdges().targets(edge => {println("TARGEGTTT: " + edge);return  edge.data().type === CfgEdgeType.TRUE;});
+			//const trueTargets = this.#node.edges().targets();			
+			//println("LEngth: " + trueTargets.length);
+		
+			return target;
+	}
+*/
 }
 

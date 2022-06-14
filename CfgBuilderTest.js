@@ -1,4 +1,6 @@
 laraImport("clava.graphs.cfg.CfgBuilder");
+laraImport("clava.graphs.cfg.CfgUtils");
+laraImport("clava.graphs.cfg.CfgEdgeType");
 laraImport("weaver.Query");
 
     for(var $function of Query.search("function")) {
@@ -15,9 +17,17 @@ laraImport("weaver.Query");
 		}
 
 		for(const node of cfg.graph.nodes()) {
-			//println("Node: " + node.data().type);
-			//println("Stmts: " + node.data().stmts);			
-			//const nodes = cfg.nodes;
+			/*
+			println("Node type :" + node.data().type);
+			const targetTrue = CfgUtils.getTarget(node, CfgEdgeType.TRUE);
+			if(targetTrue !== undefined) println("Target true: " + targetTrue.data())
+			const targetFalse = CfgUtils.getTarget(node, CfgEdgeType.FALSE);
+			if(targetFalse !== undefined) println("Target false: " + targetFalse.data())
+			const targetUncond = CfgUtils.getTarget(node, CfgEdgeType.UNCONDITIONAL);			
+			if(targetUncond !== undefined) println("Target uncond: " + targetUncond.data())			
+			*/
+			
+
 			// Verify if all stmts have a mapping in nodes
 			for(const stmt of node.data().stmts) {
 				const graphNode= cfg.getNode(stmt);
