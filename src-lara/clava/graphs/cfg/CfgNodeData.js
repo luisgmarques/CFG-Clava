@@ -17,12 +17,14 @@ class CfgNodeData extends NodeData {
 
 	#name;
 	
-	constructor(cfgNodeType, $stmt) {
-		//println("Stmt undefined? " + ($stmt === undefined));
-		const id = $stmt === undefined ? undefined : $stmt.astId;
+	constructor(cfgNodeType, $stmt, id) {
+		// If id defined, give priority to it. Othewise, use stmt astId, if defined
+		const _id = id !== undefined ? id : $stmt === undefined ? undefined : $stmt.astId;
+
+		//const id = $stmt === undefined ? undefined : $stmt.astId;
 		//println("Id: " + id)
 		// Use AST node id as graph node id
-		super(id);
+		super(_id);
 
 		this.#nodeStmt = $stmt;
 		/**if(cfgNodeType === undefined) {

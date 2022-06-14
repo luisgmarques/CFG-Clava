@@ -53,9 +53,9 @@ class CfgBuilder {
 		
 		// Create start and end nodes
 		// Do not add them to #nodes, since they have no associated statements  
-		this.#startNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.START));
+		this.#startNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.START, undefined, "start"));
 		//this.#nodes.set('START', this.#startNode)
-		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END));
+		this.#endNode = Graphs.addNode(this.#graph, DataFactory.newData(CfgNodeType.END, undefined, "end"));
 		//this.#nodes.set('END', this.#endNode)		
 
 		this.#temporaryStmts = {};

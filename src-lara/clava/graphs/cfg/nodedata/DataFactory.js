@@ -8,7 +8,7 @@ laraImport("clava.graphs.cfg.nodedata.IfData");
 
 class DataFactory {
 
-	static newData(cfgNodeType, $stmt) {
+	static newData(cfgNodeType, $stmt, id) {
 
 		switch(cfgNodeType) {
 			case CfgNodeType.INST_LIST:
@@ -26,7 +26,7 @@ class DataFactory {
 			case CfgNodeType.LOOP:
 				return new LoopData($stmt);
 			default:		
-				return new CfgNodeData(cfgNodeType, $stmt);		
+				return new CfgNodeData(cfgNodeType, $stmt, id);		
 		}
 	}
 
